@@ -1,29 +1,30 @@
 package main
 
 import (
-	"net/http"
+	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+	r := gin.Default()
 
-	// ตัวอย่างการสร้าง API endpoint เพื่อดึงข้อมูล Todo list ทั้งหมด
-	router.GET("/todos", func(c *gin.Context) {
-		// ทำการเชื่อมต่อกับ MySQL database และดึงข้อมูล Todo list จากนั้นส่งกลับไปยัง client
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Get all todos",
-		})
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "Hello, World!")
 	})
 
-	// ตัวอย่างการสร้าง API endpoint เพื่อเพิ่ม Todo ใหม่
-	router.POST("/todos", func(c *gin.Context) {
-		// ทำการเชื่อมต่อกับ MySQL database และเพิ่ม Todo ใหม่ลงในฐานข้อมูล
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Add new todo",
-		})
+	r.GET("/env", func(c *gin.Context) {
+		c.String(200, "Hello, ENV!"+os.Getenv("TEST_ENV"))
 	})
 
-	router.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	err := r.Run(":" + port)
+	if err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }
